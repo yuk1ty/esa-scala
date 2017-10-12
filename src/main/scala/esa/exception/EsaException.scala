@@ -16,4 +16,16 @@ package esa.exception
  * limitations under the License.
  */
 
-class EsaException(msg: String, e: Throwable) extends Exception(msg, e)
+object EsaException {
+
+  case class RemoteURLNotAvailableException(msg: String)
+    extends EsaException(msg)
+
+  case class MissingContentTypeException(msg: String)
+    extends EsaException(msg)
+
+  case class TeamNotSpecifiedException(msg: String)
+    extends EsaException(msg)
+}
+
+class EsaException(msg: String) extends Exception(msg)

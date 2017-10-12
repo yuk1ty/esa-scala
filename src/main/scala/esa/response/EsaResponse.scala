@@ -1,6 +1,6 @@
 package esa.response
 
-import skinny.http.{HTTP, Response}
+import skinny.http.Response
 
 /*
  * Copyright 2017 Yuki Toyoda
@@ -17,6 +17,12 @@ import skinny.http.{HTTP, Response}
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+object EsaResponse {
+
+  def of(_skinnyResponse: Response): EsaResponse =
+    new EsaResponse(_skinnyResponse)
+}
 
 class EsaResponse(_skinnyResponse: Response) {
 

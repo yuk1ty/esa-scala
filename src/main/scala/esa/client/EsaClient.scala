@@ -1,6 +1,8 @@
 package esa.client
 
-import esa.exception.TeamNotSpecifiedException
+import esa.exception.EsaException.TeamNotSpecifiedException
+import esa.response.EsaResponse
+import skinny.http.{HTTP, Method, Request}
 
 /*
  * Copyright 2017 Yuki Toyoda
@@ -37,12 +39,24 @@ class EsaClient(_accessToken: String = "",
                 _apiEndPoint: String = "",
                 _currentTeam: String = "") {
 
-  /**
-    * Current team getter.
-    * @return Current team name
-    */
-  def getCurrentTeam: String =
-    if (_currentTeam == "")
-      throw TeamNotSpecifiedException("Specified Team doesn't exist!")
-    else _currentTeam
+  def sendGet(url: String,
+              headers: Map[String, String],
+              params: (String, Any)*): EsaResponse =
+    sendSkinnyRequest(Method.GET, url, headers, params)
+
+  private[this] def sendSkinnyRequest(method: Method,
+                                url: String,
+                                headers: Map[String, String],
+                                params: Seq[(String, Any)]): EsaResponse = {
+    val req = new Request(url)
+    req.headers ++= headers
+    params.foreach(req.queryParam)
+
+    method match {
+      case Method.GET    => EsaResponse.of(HTTP.get(req))
+      case Method.POST   => EsaResponse.of(HTTP.put(req))
+      case Method.PUT    => EsaResponse.of(HTTP.put(req))
+      case Method.DELETE => EsaResponse.of(HTTP.delete(req))
+    }
+  }
 }

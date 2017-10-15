@@ -1,6 +1,5 @@
 package esa.client
 
-import esa.exception.EsaException.TeamNotSpecifiedException
 import esa.response.EsaResponse
 import skinny.http.{HTTP, Method, Request}
 

@@ -38,14 +38,20 @@ class EsaClient(_accessToken: String = "",
                 _apiEndPoint: String = "",
                 _currentTeam: String = "") {
 
-  def sendGet(url: String,
-              headers: Map[String, String],
+  type Url = String
+
+  type HeaderKey = String
+
+  type HeaderValue = String
+
+  def sendGet(url: Url,
+              headers: Map[HeaderKey, HeaderValue],
               params: (String, Any)*): EsaResponse =
     sendSkinnyRequest(Method.GET, url, headers, params)
 
-  private[this] def sendSkinnyRequest(method: Method,
-                                url: String,
-                                headers: Map[String, String],
+  private def sendSkinnyRequest(method: Method,
+                                url: Url,
+                                headers: Map[HeaderKey, HeaderValue],
                                 params: Seq[(String, Any)]): EsaResponse = {
     val req = new Request(url)
     req.headers ++= headers

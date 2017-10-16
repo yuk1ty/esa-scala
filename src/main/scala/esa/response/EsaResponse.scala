@@ -18,13 +18,15 @@ import skinny.http.Response
  * limitations under the License.
  */
 
-object EsaResponse {
-
-  def of(_skinnyResponse: Response): EsaResponse =
-    new EsaResponse(_skinnyResponse)
-}
-
-class EsaResponse(_skinnyResponse: Response) {
+/**
+  * EsaResponse は REST したことによって生成される Skinny フレームワークの {@link Response} を受け取り、
+  * そのオブジェクトから status, headers, body を個別に分割して保持する値オブジェクトです。
+  *
+  * Esa API アプリケーション内で REST した結果を扱いたい際には必ずこのオブジェクトを通る必要があります。
+  *
+  * @param _skinnyResponse Skinny フレームワークの Response
+  */
+case class EsaResponse(_skinnyResponse: Response) {
 
   def body: String = _skinnyResponse.textBody
 

@@ -1,4 +1,4 @@
-package response
+package esa.response
 
 import esa.response.EsaResponse
 import org.scalatest.{Matchers, WordSpec}
@@ -22,10 +22,20 @@ import skinny.http.Response
 
 class EsaResponseSpec extends WordSpec with Matchers {
 
-  val res = new EsaResponse(Response(200))
+  val res = EsaResponse(
+    Response(200,
+             Map("keyA" -> "valueA"),
+             Map(), // headerField is not in use
+             Map(), // rawCookies are not in use
+             Some("utf-8"), // charset is not in use
+            "body".getBytes))
 
   "EsaResponse" should {
     "be available" in {
+      res.status should equal(200)
+      res.header("keyA") should equal(Some("valueA"))
+      res.headers should equal(Map("keyA" -> "valueA"))
+      res.body should equal("body")
     }
   }
 }

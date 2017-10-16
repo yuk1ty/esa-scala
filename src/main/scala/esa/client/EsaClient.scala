@@ -19,49 +19,57 @@ import skinny.http.{HTTP, Method, Request}
  * limitations under the License.
  */
 
-object EsaClient {
+class EsaClient(private val accessToken: String = "",
+                     private val apiEndPoint: String = "",
+                     private val currentTeam: String = "") {
 
-  /**
-    * Create <code>EsaClient</code> instance.
-    * @param accessToken Access token
-    * @param apiEndPoint End point of your api
-    * @param currentTeam Current team name
-    * @return EsaClient instance
-    */
-  def newInstance(accessToken: String = "",
-                  apiEndPoint: String = "",
-                  currentTeam: String = ""): EsaClient =
-    new EsaClient(accessToken, apiEndPoint, currentTeam)
-}
+  protected type PathStr = String
 
-class EsaClient(_accessToken: String = "",
-                _apiEndPoint: String = "",
-                _currentTeam: String = "") {
+  protected type HeaderKey = String
 
-  type Url = String
+  protected type HeaderValue = String
 
-  type HeaderKey = String
+  def sendGet(path: PathStr,
+              headers: Map[HeaderKey, HeaderValue] = Map(),
+              params: Seq[(String, Any)] = Seq()): EsaResponse =
+    sendSkinnyRequest(Method.GET, path, headers, params)
 
-  type HeaderValue = String
+  def sendPost(path: PathStr,
+               headers: Map[HeaderKey, HeaderValue] = Map(),
+               params: Seq[(String, Any)] = Seq()): EsaResponse =
+    sendSkinnyRequest(Method.POST, path, headers, params)
 
-  def sendGet(url: Url,
-              headers: Map[HeaderKey, HeaderValue],
-              params: (String, Any)*): EsaResponse =
-    sendSkinnyRequest(Method.GET, url, headers, params)
+  def sendPut(path: PathStr,
+              headers: Map[HeaderKey, HeaderValue] = Map(),
+              params: Seq[(String, Any)] = Seq()): EsaResponse =
+    sendSkinnyRequest(Method.PUT, path, headers, params)
+
+  // TODO Skinny framework does not have PATCH Method...
+  def sendPatch(path: PathStr,
+                headers: Map[HeaderKey, HeaderValue] = Map(),
+                params: Seq[(String, Any)] = Seq()): EsaResponse = ???
+
+  def sendDelete(path: PathStr,
+                 headers: Map[HeaderKey, HeaderValue] = Map(),
+                 params: Seq[(String, Any)] = Seq()) =
+    sendSkinnyRequest(Method.DELETE, path, headers, params)
 
   private def sendSkinnyRequest(method: Method,
-                                url: Url,
+                                path: PathStr,
                                 headers: Map[HeaderKey, HeaderValue],
                                 params: Seq[(String, Any)]): EsaResponse = {
-    val req = new Request(url)
+    val req = new Request(createSkinnyUrl(path))
     req.headers ++= headers
     params.foreach(req.queryParam)
 
     method match {
-      case Method.GET    => EsaResponse.of(HTTP.get(req))
-      case Method.POST   => EsaResponse.of(HTTP.put(req))
-      case Method.PUT    => EsaResponse.of(HTTP.put(req))
-      case Method.DELETE => EsaResponse.of(HTTP.delete(req))
+      case Method.GET    => EsaResponse(HTTP.get(req))
+      case Method.POST   => EsaResponse(HTTP.put(req))
+      case Method.PUT    => EsaResponse(HTTP.put(req))
+      case Method.DELETE => EsaResponse(HTTP.delete(req))
     }
   }
+
+  private def createSkinnyUrl(path: PathStr): String =
+    if (!apiEndPoint.isEmpty) apiEndPoint else "https://api.esa.io" + path
 }

@@ -1,6 +1,5 @@
 package esa.response
 
-import esa.response.EsaResponse
 import org.scalatest.{Matchers, WordSpec}
 import skinny.http.Response
 

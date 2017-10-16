@@ -1,6 +1,5 @@
 package esa.client
 
-import esa.client.EsaClient
 import org.scalatest.{Matchers, WordSpec}
 
 /*

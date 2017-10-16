@@ -28,4 +28,4 @@ object EsaException {
     extends EsaException(msg)
 }
 
-class EsaException(msg: String) extends Exception(msg)
+sealed class EsaException(msg: String) extends Exception(msg)

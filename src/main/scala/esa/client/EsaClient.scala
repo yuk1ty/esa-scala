@@ -21,13 +21,13 @@ import skinny.http.{HTTP, Method, Request}
 
 class EsaClient(private val accessToken: String = "",
                      private val apiEndPoint: String = "",
-                     private val currentTeam: String = "") {
+                     val currentTeam: String = "") {
 
-  protected type PathStr = String
+  private type PathStr = String
 
-  protected type HeaderKey = String
+  private type HeaderKey = String
 
-  protected type HeaderValue = String
+  private type HeaderValue = String
 
   def sendGet(path: PathStr,
               headers: Map[HeaderKey, HeaderValue] = Map(),
@@ -51,7 +51,7 @@ class EsaClient(private val accessToken: String = "",
 
   def sendDelete(path: PathStr,
                  headers: Map[HeaderKey, HeaderValue] = Map(),
-                 params: Seq[(String, Any)] = Seq()) =
+                 params: Seq[(String, Any)] = Seq()): EsaResponse =
     sendSkinnyRequest(Method.DELETE, path, headers, params)
 
   private def sendSkinnyRequest(method: Method,

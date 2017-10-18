@@ -18,72 +18,126 @@ import esa.response.EsaResponse
  * limitations under the License.
  */
 
-case class EsaApiMethods(private val accessToken: String = "",
-                         private val apiEndPoint: String = "",
-                         private val currentTeam: String = "")
-    extends EsaClient(accessToken, apiEndPoint, currentTeam) {
+case class EsaApiMethods(private val esaClient: EsaClient) {
+
+  private type PathStr = String
+
+  private type HeaderKey = String
+
+  private type HeaderValue = String
+
+  private val currentTeam: String = esaClient.currentTeam
 
   def user(headers: Map[HeaderKey, HeaderValue] = Map(),
            params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendGet("/v1/user", headers, params)
+    esaClient.sendGet("/v1/user", headers, params)
 
   def teams(headers: Map[HeaderKey, HeaderValue] = Map(),
             params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendGet("/v1/teams", headers, params)
+    esaClient.sendGet("/v1/teams", headers, params)
 
   def team(teamName: String,
            headers: Map[HeaderKey, HeaderValue] = Map(),
            params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendGet(s"/v1/teams/$currentTeam", headers, params)
+    esaClient.sendGet(s"/v1/teams/$currentTeam", headers, params)
 
   def stats(headers: Map[HeaderKey, HeaderValue] = Map(),
             params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendGet(s"/v1/teams/$currentTeam/stats", headers, params)
+    esaClient.sendGet(s"/v1/teams/$currentTeam/stats", headers, params)
 
   def members(headers: Map[HeaderKey, HeaderValue] = Map(),
               params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendGet(s"/v1/teams/$currentTeam/members", headers, params)
+    esaClient.sendGet(s"/v1/teams/$currentTeam/members", headers, params)
 
   def posts(headers: Map[HeaderKey, HeaderValue] = Map(),
             params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendGet(s"/v1/teams/$currentTeam/posts", headers, params)
+    esaClient.sendGet(s"/v1/teams/$currentTeam/posts", headers, params)
 
   def post(postNumber: Int,
            headers: Map[HeaderKey, HeaderValue] = Map(),
            params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendPost(s"/v1/teams/$currentTeam/posts/$postNumber", headers, params)
+    esaClient.sendPost(s"/v1/teams/$currentTeam/posts/$postNumber",
+                       headers,
+                       params)
 
   def createPost(headers: Map[HeaderKey, HeaderValue] = Map(),
                  params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendPost(s"/v1/teams/$currentTeam/posts", headers, params)
+    esaClient.sendPost(s"/v1/teams/$currentTeam/posts", headers, params)
 
   // TODO updatePost
 
   def deletePost(postNumber: Int,
                  headers: Map[HeaderKey, HeaderValue] = Map(),
                  params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendDelete(s"/v1/teams/$currentTeam/posts/$postNumber")
+    esaClient.sendDelete(s"/v1/teams/$currentTeam/posts/$postNumber")
 
   def comments(postNumber: Option[Int],
                headers: Map[HeaderKey, HeaderValue] = Map(),
                params: Seq[(String, Any)] = Seq()): EsaResponse =
     postNumber match {
       case Some(pn) =>
-        sendGet(s"/v1/teams/$currentTeam/posts/$pn/comments", headers, params)
-      case None => sendGet(s"/v1/teams/$currentTeam/comments", headers, params)
+        esaClient.sendGet(s"/v1/teams/$currentTeam/posts/$pn/comments",
+                          headers,
+                          params)
+      case None =>
+        esaClient.sendGet(s"/v1/teams/$currentTeam/comments", headers, params)
     }
 
   def createComment(postNumber: Int,
                     headers: Map[HeaderKey, HeaderValue] = Map(),
                     params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendPost(s"/v1/teams/$currentTeam/posts/$postNumber/comments",
-             headers,
-             params)
+    esaClient.sendPost(s"/v1/teams/$currentTeam/posts/$postNumber/comments",
+                       headers,
+                       params)
 
   // TODO updateComment
 
   def deleteComment(commentId: Long,
                     headers: Map[HeaderKey, HeaderValue] = Map(),
                     params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendDelete(s"/v1/teams/$currentTeam/comments/$commentId", headers, params)
+    esaClient.sendDelete(s"/v1/teams/$currentTeam/comments/$commentId",
+                         headers,
+                         params)
+
+  def createSharing(postNumber: Long,
+                    headers: Map[HeaderKey, HeaderValue],
+                    params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendPost(s"/v1/teams/$currentTeam/posts/$postNumber/sharing",
+                       headers,
+                       params)
+
+  def deleteSharing(postNumber: Long,
+                    headers: Map[HeaderKey, HeaderValue],
+                    params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendDelete(s"/v1/teams/$currentTeam/posts/$postNumber/sharing",
+                         headers,
+                         params)
+
+  def postStargazers(postNumber: Long,
+                     headers: Map[HeaderKey, HeaderValue],
+                     params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendGet(s"/v1/teams/$currentTeam/posts/$postNumber/start",
+                      headers,
+                      params)
+
+  def addPostStar(postNumber: Long,
+                  headers: Map[HeaderKey, HeaderValue],
+                  params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendPost(s"/v1/teams/$currentTeam/posts/$postNumber/start",
+                       headers,
+                       params)
+
+  def deletePostStar(postNumber: Long,
+                     headers: Map[HeaderKey, HeaderValue],
+                     params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendDelete(s"/v1/tams/$currentTeam/posts/$postNumber/star",
+                         headers,
+                         params)
+
+  def commentStargazers(commentId: Long,
+                        headers: Map[HeaderKey, HeaderValue],
+                        params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendGet(s"/v1/teams/$currentTeam/comments/$commentId/stargazers",
+                      headers,
+                      params)
 }

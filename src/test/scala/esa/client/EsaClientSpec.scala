@@ -42,6 +42,12 @@ class EsaClientSpec extends WordSpec with Matchers {
       response.headers should not equal empty
     }
 
+    "sendPatch" in {
+      val response = esaClient.sendPatch("/v1/teams", Map())
+      response.status should equal(404)
+      response.headers should not equal empty
+    }
+
     "sendDelete" in {
       val response = esaClient.sendDelete("/v1/teams", Map())
       response.status should equal(404)

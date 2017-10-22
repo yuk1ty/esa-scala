@@ -20,8 +20,8 @@ import skinny.http.{HTTP, Method, Request}
  */
 
 class EsaClient(private val accessToken: String = "",
-                     private val apiEndPoint: String = "",
-                     val currentTeam: String = "") {
+                private val apiEndPoint: String = "",
+                val currentTeam: String = "") {
 
   private type PathStr = String
 
@@ -47,7 +47,8 @@ class EsaClient(private val accessToken: String = "",
   // TODO Skinny framework does not have PATCH Method...
   def sendPatch(path: PathStr,
                 headers: Map[HeaderKey, HeaderValue] = Map(),
-                params: Seq[(String, Any)] = Seq()): EsaResponse = ???
+                params: Seq[(String, Any)] = Seq()): EsaResponse =
+    sendSkinnyRequest(Method.PUT, path, headers, params)
 
   def sendDelete(path: PathStr,
                  headers: Map[HeaderKey, HeaderValue] = Map(),
@@ -71,5 +72,5 @@ class EsaClient(private val accessToken: String = "",
   }
 
   private def createSkinnyUrl(path: PathStr): String =
-    if (!apiEndPoint.isEmpty) apiEndPoint else "https://api.esa.io" + path
+    if (!apiEndPoint.isEmpty) apiEndPoint + path else "https://api.esa.io" + path
 }

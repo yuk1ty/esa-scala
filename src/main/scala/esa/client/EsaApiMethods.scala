@@ -53,7 +53,7 @@ case class EsaApiMethods(private val esaClient: EsaClient) {
             params: Seq[(String, Any)] = Seq()): EsaResponse =
     esaClient.sendGet(s"/v1/teams/$currentTeam/posts", headers, params)
 
-  def post(postNumber: Int,
+  def post(postNumber: Long,
            headers: Map[HeaderKey, HeaderValue] = Map(),
            params: Seq[(String, Any)] = Seq()): EsaResponse =
     esaClient.sendPost(s"/v1/teams/$currentTeam/posts/$postNumber",
@@ -66,12 +66,12 @@ case class EsaApiMethods(private val esaClient: EsaClient) {
 
   // TODO updatePost
 
-  def deletePost(postNumber: Int,
+  def deletePost(postNumber: Long,
                  headers: Map[HeaderKey, HeaderValue] = Map(),
                  params: Seq[(String, Any)] = Seq()): EsaResponse =
     esaClient.sendDelete(s"/v1/teams/$currentTeam/posts/$postNumber")
 
-  def comments(postNumber: Option[Int],
+  def comments(postNumber: Option[Long],
                headers: Map[HeaderKey, HeaderValue] = Map(),
                params: Seq[(String, Any)] = Seq()): EsaResponse =
     postNumber match {
@@ -83,7 +83,7 @@ case class EsaApiMethods(private val esaClient: EsaClient) {
         esaClient.sendGet(s"/v1/teams/$currentTeam/comments", headers, params)
     }
 
-  def createComment(postNumber: Int,
+  def createComment(postNumber: Long,
                     headers: Map[HeaderKey, HeaderValue] = Map(),
                     params: Seq[(String, Any)] = Seq()): EsaResponse =
     esaClient.sendPost(s"/v1/teams/$currentTeam/posts/$postNumber/comments",
@@ -140,4 +140,39 @@ case class EsaApiMethods(private val esaClient: EsaClient) {
     esaClient.sendGet(s"/v1/teams/$currentTeam/comments/$commentId/stargazers",
                       headers,
                       params)
+
+  def addCommentStar(commentId: Long,
+                     headers: Map[HeaderKey, HeaderValue],
+                     params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendPost(s"/v1/teams/$currentTeam/comments/$commentId/star",
+                       headers,
+                       params)
+
+  def deleteCommentStar(commentId: Long,
+                        headers: Map[HeaderKey, HeaderValue],
+                        params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendDelete(s"/v1/teams/$currentTeam/comments/$commentId/star",
+                         headers,
+                         params)
+
+  def watchers(postNumber: Long,
+               headers: Map[HeaderKey, HeaderValue],
+               params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendGet(s"/v1/teams/$currentTeam/posts/$postNumber/watch",
+                      headers,
+                      params)
+
+  def addWatch(postNumber: Long,
+               headers: Map[HeaderKey, HeaderValue],
+               params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendPost(s"/v1/teams/$currentTeam/posts/$postNumber/watch",
+                       headers,
+                       params)
+
+  def deleteWatch(postNumber: Long,
+                  headers: Map[HeaderKey, HeaderValue],
+                  params: Seq[(String, Any)]): EsaResponse =
+    esaClient.sendDelete(s"/v1/teams/$currentTeam/posts/$postNumber/watch",
+                         headers,
+                         params)
 }

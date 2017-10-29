@@ -1,8 +1,6 @@
-package esa.response
+package esa.http
 
-import java.util.Map.Entry
-
-import org.asynchttpclient.Response
+import skinny.http.Method
 
 /*
  * Copyright 2017 Yuki Toyoda
@@ -20,11 +18,14 @@ import org.asynchttpclient.Response
  * limitations under the License.
  */
 
-final case class EsaResponse(private val response: Response) {
+case object GET extends EsaMethod
 
-  def body: String = response.getResponseBody
+case object PUT extends EsaMethod
 
-  def header(name: String): String = response.getHeader(name)
+case object POST extends EsaMethod
 
-  def status: Int = response.getStatusCode
-}
+case object PATCH extends EsaMethod
+
+case object DELETE extends EsaMethod
+
+sealed trait EsaMethod

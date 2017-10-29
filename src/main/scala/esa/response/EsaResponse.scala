@@ -1,7 +1,5 @@
 package esa.response
 
-import java.util.Map.Entry
-
 import org.asynchttpclient.Response
 
 /*

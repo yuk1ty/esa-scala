@@ -1,7 +1,5 @@
 package esa.http
 
-import skinny.http.Method
-
 /*
  * Copyright 2017 Yuki Toyoda
  *

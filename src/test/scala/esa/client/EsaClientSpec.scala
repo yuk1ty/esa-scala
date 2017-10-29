@@ -31,27 +31,23 @@ class EsaClientSpec extends WordSpec with Matchers {
     }
 
     "sendPost" in {
-      val response = esaClient.sendPost("/v1/teams", Map())
-      response.status should equal(404)
-      response.headers should not equal empty
+      val response = esaClient.sendPost("/v1/teams", Map(), Map(), "")
+      response.status should equal(500)
     }
 
     "sendPut" in {
-      val response = esaClient.sendPut("/v1/teams", Map())
+      val response = esaClient.sendPut("/v1/teams", Map(), Map(), "")
       response.status should equal(404)
-      response.headers should not equal empty
     }
 
     "sendPatch" in {
-      val response = esaClient.sendPatch("/v1/teams", Map())
+      val response = esaClient.sendPatch("/v1/teams", Map(), Map(), "")
       response.status should equal(404)
-      response.headers should not equal empty
     }
 
     "sendDelete" in {
       val response = esaClient.sendDelete("/v1/teams", Map())
       response.status should equal(404)
-      response.headers should not equal empty
     }
   }
 }

@@ -1,7 +1,12 @@
 package esa.client
 
+import dispatch.{Http, Req}
+import esa.http._
 import esa.response.EsaResponse
-import skinny.http.{HTTP, Method, Request}
+import org.asynchttpclient.Response
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /*
  * Copyright 2017 Yuki Toyoda
@@ -23,54 +28,69 @@ class EsaClient(private val accessToken: String = "",
                 private val apiEndPoint: String = "",
                 val currentTeam: String = "") {
 
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  private lazy val accessTokenHeader = Map(
+    "Authorization" -> s"Bearer $accessToken")
+
   private type PathStr = String
 
-  private type HeaderKey = String
-
-  private type HeaderValue = String
-
   def sendGet(path: PathStr,
-              headers: Map[HeaderKey, HeaderValue] = Map(),
-              params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendSkinnyRequest(Method.GET, path, headers, params)
-
-  def sendPost(path: PathStr,
-               headers: Map[HeaderKey, HeaderValue] = Map(),
-               params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendSkinnyRequest(Method.POST, path, headers, params)
+              params: Map[String, String] = Map(),
+              headers: Map[String, String] = Map()): EsaResponse =
+    sendRequest(GET, path, headers, params)
 
   def sendPut(path: PathStr,
-              headers: Map[HeaderKey, HeaderValue] = Map(),
-              params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendSkinnyRequest(Method.PUT, path, headers, params)
+              params: Map[String, String] = Map(),
+              headers: Map[String, String] = Map(),
+              requestBody: String): EsaResponse =
+    sendRequest(PUT, path, headers, params, requestBody)
 
-  // TODO Skinny framework does not have PATCH Method...
+  def sendPost(path: PathStr,
+               params: Map[String, String] = Map(),
+               headers: Map[String, String] = Map(),
+               requestBody: String): EsaResponse =
+    sendRequest(POST, path, headers, params, requestBody)
+
   def sendPatch(path: PathStr,
-                headers: Map[HeaderKey, HeaderValue] = Map(),
-                params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendSkinnyRequest(Method.PUT, path, headers, params)
+                params: Map[String, String] = Map(),
+                headers: Map[String, String] = Map(),
+                requestBody: String): EsaResponse =
+    sendRequest(PATCH, path, headers, params, requestBody)
 
   def sendDelete(path: PathStr,
-                 headers: Map[HeaderKey, HeaderValue] = Map(),
-                 params: Seq[(String, Any)] = Seq()): EsaResponse =
-    sendSkinnyRequest(Method.DELETE, path, headers, params)
+                 params: Map[String, String] = Map(),
+                 headers: Map[String, String] = Map()): EsaResponse =
+    sendRequest(DELETE, path, headers, params)
 
-  private def sendSkinnyRequest(method: Method,
-                                path: PathStr,
-                                headers: Map[HeaderKey, HeaderValue],
-                                params: Seq[(String, Any)]): EsaResponse = {
-    val req = new Request(createSkinnyUrl(path))
-    req.headers ++= headers
-    params.foreach(req.queryParam)
+  private def sendRequest(method: EsaMethod,
+                          path: PathStr,
+                          headers: Map[String, String],
+                          params: Map[String, String],
+                          requestBody: String = ""): EsaResponse = {
+    // 外部で構築済みの文字列を URL として使用する必要があるので、ここではフルパスの文字列を受け取るようにしています。
+    val req = Req(_.setUrl(constructUri(path))) <:< accessTokenHeader <:< headers <<? params
 
     method match {
-      case Method.GET    => EsaResponse(HTTP.get(req))
-      case Method.POST   => EsaResponse(HTTP.put(req))
-      case Method.PUT    => EsaResponse(HTTP.put(req))
-      case Method.DELETE => EsaResponse(HTTP.delete(req))
+      case GET    => EsaResponse(send(req GET))
+      case PUT    => EsaResponse(send(req << requestBody PUT))
+      case POST   => EsaResponse(send(req << requestBody POST))
+      case PATCH  => EsaResponse(send(req << requestBody PATCH))
+      case DELETE => EsaResponse(send(req DELETE))
     }
   }
 
-  private def createSkinnyUrl(path: PathStr): String =
-    if (!apiEndPoint.isEmpty) apiEndPoint + path else "https://api.esa.io" + path
+  private def send(req: Req): Response =
+    Await.result(
+      Http.default(req <:< Map("Content-Type" -> EsaClient.CONTENT_TYPE)),
+      Duration.Inf)
+
+  private def constructUri(path: String): String =
+    if (apiEndPoint.isEmpty) "https://api.esa.io" + path
+    else apiEndPoint + path
+}
+
+object EsaClient {
+
+  private val CONTENT_TYPE: String = "application/json"
 }

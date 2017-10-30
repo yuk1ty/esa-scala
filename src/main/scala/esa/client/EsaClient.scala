@@ -7,6 +7,7 @@ import org.asynchttpclient.Response
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.language.postfixOps
 
 /*
  * Copyright 2017 Yuki Toyoda

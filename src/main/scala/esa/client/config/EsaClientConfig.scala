@@ -18,9 +18,9 @@ package esa.client.config
 
 object EsaClientConfig {
 
-  lazy val apiEndPoint: String = "https://api.esa.io"
+  private[esa] lazy val apiEndPoint: String = "https://api.esa.io"
 
-  lazy val accessToken: String = "" // change to your access token
+  private[esa] lazy val accessToken: String = "" // change to your access token
 
-  lazy val currentTeam: String = "" // change to your current team
+  private[esa] lazy val currentTeam: String = "" // change to your current team
 }

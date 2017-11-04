@@ -1,6 +1,7 @@
 package esa.client
 
 import dispatch.{Http, Req}
+import esa.client.config.EsaClientConfig
 import esa.http._
 import esa.response.EsaResponse
 import org.asynchttpclient.Response
@@ -25,11 +26,15 @@ import scala.language.postfixOps
  * limitations under the License.
  */
 
-class EsaClient(private val accessToken: String = "",
-                private val apiEndPoint: String = "",
-                val currentTeam: String = "") {
+case class EsaClient() {
 
   import scala.concurrent.ExecutionContext.Implicits.global
+
+  private[client] val apiEndPoint = EsaClientConfig.apiEndPoint
+
+  private[client] val accessToken = EsaClientConfig.accessToken
+
+  private[client] val currentTeam = EsaClientConfig.currentTeam
 
   private lazy val accessTokenHeader = Map(
     "Authorization" -> s"Bearer $accessToken")
@@ -91,7 +96,12 @@ class EsaClient(private val accessToken: String = "",
     else apiEndPoint + path
 }
 
-object EsaClient {
+object EsaClient extends EsaClient {
 
   private val CONTENT_TYPE: String = "application/json"
+}
+
+trait EsaClientMixin {
+
+  lazy val esaClient: EsaClient = EsaClient
 }

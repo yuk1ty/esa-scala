@@ -18,15 +18,14 @@ import esa.response.EsaResponse
  * limitations under the License.
  */
 
-case class EsaApiMethods(private val esaClient: EsaClient) {
+case class EsaApiMethods() extends EsaClientMixin {
 
   private type PathStr = String
 
   private val currentTeam: String = esaClient.currentTeam
 
   def user(headers: Map[String, String] = Map(),
-           params: Map[String, String] = Map())
-    : EsaResponse =
+           params: Map[String, String] = Map()): EsaResponse =
     esaClient.sendGet("/v1/user", params, headers)
 
   def teams(headers: Map[String, String] = Map(),
@@ -82,4 +81,11 @@ case class EsaApiMethods(private val esaClient: EsaClient) {
     esaClient.sendDelete(s"/v1/teams/$currentTeam/posts/$postNumber",
                          params,
                          headers)
+}
+
+object EsaApiMethods extends EsaApiMethods {}
+
+trait EsaApiMethodsMixin extends EsaApiMethods {
+
+  lazy val esaApiMethods = EsaApiMethods
 }

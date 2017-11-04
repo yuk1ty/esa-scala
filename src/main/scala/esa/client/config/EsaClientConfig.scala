@@ -1,4 +1,4 @@
-package esa.http
+package esa.client.config
 
 /*
  * Copyright 2017 Yuki Toyoda
@@ -16,14 +16,11 @@ package esa.http
  * limitations under the License.
  */
 
-private[esa] case object GET extends EsaMethod
+object EsaClientConfig {
 
-private[esa] case object PUT extends EsaMethod
+  lazy val apiEndPoint: String = "https://api.esa.io"
 
-private[esa] case object POST extends EsaMethod
+  lazy val accessToken: String = "" // change to your access token
 
-private[esa] case object PATCH extends EsaMethod
-
-private[esa] case object DELETE extends EsaMethod
-
-private[esa] sealed trait EsaMethod
+  lazy val currentTeam: String = "" // change to your current team
+}
